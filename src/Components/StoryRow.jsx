@@ -1,7 +1,9 @@
 import React from "react";
+import { useStateValue } from "./StateProvider";
 import Stories from "./Stories";
 import "./StoryRow.css"
 const StoryRow = () => {
+  const [{user}, dispatch] =  useStateValue();
   return (
     <div className="story-row">
       <Stories

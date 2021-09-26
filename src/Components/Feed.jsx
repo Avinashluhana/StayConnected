@@ -1,20 +1,35 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import StoryRow from "./StoryRow";
 import "./Feed.css";
 import MessageSender from "./MessageSender";
 import Post from "./Post";
-
+import db from "../firebase";
 const Feed = () => {
+  const [posts, setPosts] = useState([]);
+  useEffect(() => {
+    db.collection("posts")
+      .orderBy("timestamp", "desc")
+      .onSnapshot((snapshot) => {
+        setPosts(
+          snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
+        );
+      });
+  }, []);
+
   return (
     <div className="feed">
       <StoryRow />
       <MessageSender />
-      <Post
-        profilePic="https://scontent.frba5-1.fna.fbcdn.net/v/t1.6435-9/154773974_3749015665195387_3350529023391850292_n.jpg?_nc_cat=106&ccb=1-5&_nc_sid=174925&_nc_ohc=3ObcL2svBQ0AX_B5lU3&_nc_ht=scontent.frba5-1.fna&oh=54d82d10325a9c6e7e4bc119d0d0c8d3&oe=616FC5F4"
-        username="Avinash kumar"
-        message="Hello peeps"
-        image="https://scontent.frba5-1.fna.fbcdn.net/v/t1.6435-9/74209810_701879203670214_7948865754764410880_n.jpg?_nc_cat=100&ccb=1-5&_nc_sid=174925&_nc_ohc=5In7MVQaupcAX-5NHL_&tn=_M2cmG9FSawHtT5c&_nc_ht=scontent.frba5-1.fna&oh=abd9ab32ec7c993b649f6a3602437264&oe=6171CDF9"
-      />
+      {posts.map((post) => (
+        <Post
+          key={post.data.id}
+          profilePic={post.data.profilePic}
+          message={post.data.message}
+          timestamp={post.data.timestamp}
+          username={post.data.username}
+          image={post.data.image}
+        />
+      ))}
     </div>
   );
 };
